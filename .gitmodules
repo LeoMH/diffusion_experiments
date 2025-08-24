@@ -1,0 +1,3 @@
+[submodule "diffusion_cuda"]
+	path = diffusion_cuda
+	url = git@github.com:LeoMH/diffusion-cuda.git
