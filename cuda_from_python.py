@@ -10,21 +10,27 @@ import pandas as pd
 # call the function
 def run_simulation():
     # load the lookup tables
+    lookup_path_al_fe_900 = "lookup/Lookup_AL-Fe_900°C_neu.csv"
     lookup_path_al = "lookup/Übertragungstabelle_Al_Factsage900°C.csv"
     lookup_path_fe = "lookup/Übertragungstabelle_Fe_Factsage900°C.csv"
 
-    lookup_al = pd.read_csv(lookup_path_al, sep=";", decimal=".")["900"].to_numpy()
-    lookup_fe = pd.read_csv(lookup_path_fe, sep=";", decimal=".")["900"].to_numpy()
+    lookup_al = pd.read_csv(lookup_path_al_fe_900, sep=";", decimal=".")["aAl"].to_numpy()
+    lookup_fe = pd.read_csv(lookup_path_al_fe_900, sep=";", decimal=".")["aFe"].to_numpy()
+
+    # reverse order of activity values (optional)
+    lookup_al = reverse_lookup(lookup_al)
 
     # create an instance of the SimulationParams structure
     sp = SimulationParams()
     sp.timespan = 10
     sp.m_A = 0.0270
     sp.m_B = 0.0559
-    sp.p_A = 2700.0
-    sp.p_B = 7900.0
-    sp.D_A = 4e-9
-    sp.D_B = 4e-9
+    sp.p_A = 2300.0 # 900: 2300.0; 650: 2580.0
+    sp.p_B = 7780.0 # 900: 7780.0; 650: 7800.0
+    # sp.D_A = 6.06554E-09 
+    # sp.D_B = 1.91912E-09
+    sp.D_A = 3.99233E-09
+    sp.D_B = 3.99233E-09
     sp.dd = 2e-7
 
     # define your key colors (hex or RGB tuples):
@@ -51,7 +57,7 @@ def run_simulation():
     cmap.set_over("black")
 
     # image_path = "Cu-Sinterstruktur(200x200µm).tif"
-    image_path = "./images/air_edited_scaled.tiff"
+    image_path = "images/Cu-Sinterstruktur(200x200µm)_edited.tif"
     # image_path = "air_image.tiff"
     # X = parse_image(image_path)[..., np.newaxis]  # Add a new axis to make it 3D
     X = parse_image_air(image_path)[..., np.newaxis]  # Add a new axis to make it 3D
@@ -78,21 +84,22 @@ def run_simulation():
 
     # video
     plt.title(f"Simulation result at t=0")
-    plt.savefig(f"vid_result/000.png",dpi=600)
-    timespan = 60
-    dT = 1
+    plt.savefig(f"result/0.png",dpi=600)
+    dts_900 = [1, 2, 7, 10, 30, 50, 100, 300, 500, 1000, 2000]
     t = 0
-    while t < timespan:
-        sp.timespan = dT
-        t += dT  
+    for i in dts_900:
+        t = t+i
+        sp.timespan = i
         # run the simulation
         result, X = simulation_cuda(sp, X, lookup_al, lookup_fe)
 
         # Plot the result
         plt.imshow(X[...,0].swapaxes(0, 1), cmap=cmap, vmin=0, vmax=1)
         plt.title(f"Simulation result at t={t}")
-        plt.savefig(f"vid_result/{t:03d}.png", dpi=600)
-    return result
+        plt.savefig(f"result/{t}.png", dpi=600)
+
+def reverse_lookup(lookup):
+    return lookup[::-1]
 
 if __name__ == "__main__":
     result = run_simulation()

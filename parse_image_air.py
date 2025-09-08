@@ -38,13 +38,13 @@ def parse_image_air(image_path):
         raise ValueError("Image has more than 2 dimensions and cannot be converted to grayscale.")
 
     # Threshold the data to be between 0 and 1 and air to be -1
-    air = data < 0.4
-    iron = np.logical_and(data < 0.8, data >= 0.4)
-    alu  = data >= 0.8
+    A = data < 0.5
+    # air = np.logical_and(data < 0.8, data >= 0.4)
+    B  = data >= 0.5
 
-    data[air] = -1.0
-    data[iron] = 0.0
-    data[alu] = 1.0
+    data[A] = 1.0
+    # data[air] = -1.0
+    data[B] = 0.0
 
     counts = np.unique(data, return_counts=True)
 
