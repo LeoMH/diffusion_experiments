@@ -1,7 +1,7 @@
 __pycache__
 .vscode/
 build
-result
+result/
 venv/
 vid_result/
 *.mp4

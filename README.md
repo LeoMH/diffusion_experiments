@@ -10,3 +10,8 @@ python -m venv venv
 source venv/bin/activate
 pip install -r diffusion_cuda/requirements.txt
 ```
+
+# Run experiment
+```bash
+python -m experiments.datei
+```
