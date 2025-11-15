@@ -8,13 +8,14 @@ import os
 
 from parse_image_air import parse_image_air
 
-EXPERIMENT_NAME = "rotation_al_cu"
+EXPERIMENT_NAME = "rotation_al_cu_10s"
 
 # call the function
 def run_simulation():
     directory = f"result/{EXPERIMENT_NAME}"
     os.makedirs(directory, exist_ok=True)
     lookup_path = "lookup/Al-Cu_500-800°C_V3.csv"
+    alt_lookup_path = "lookup/Lookup_Al-Cu_700°C_Cu(Al)-Phase_mit_Henry-Näherung.csv"
     lookup_al_temp = pd.read_csv(lookup_path, sep=";", decimal=".")["a-Al(500)"].to_numpy()
     lookup_cu = pd.read_csv(lookup_path, sep=";", decimal=".")["a-Cu(500)"].to_numpy()
     lookup_al = lookup_al_temp[::-1]
@@ -78,51 +79,51 @@ def run_simulation():
     plt.savefig(f"{directory}/simulation_begin.png",dpi=600)
     np.save(f"{directory}/simulation_begin.npy", X)
 
-    # plot results 500
-    dir500 = f"result/{EXPERIMENT_NAME}/500"
-    os.makedirs(dir500, exist_ok=True)
+    # # plot results 500
+    # dir500 = f"result/{EXPERIMENT_NAME}/500"
+    # os.makedirs(dir500, exist_ok=True)
     
-    t = 0
-    for i in timesteps:
-        print(X[...,0][5])
-        t += 1
-        delta_t = ((sp.dd * sp.dd) / sp.D_A)
-        sp.timespan = i * delta_t
-        result, X = simulation_cuda(sp, X, lookup_al, lookup_cu)
-        plt.imshow(X[...,0].swapaxes(0, 1), cmap=cmap, vmin=0, vmax=1)
-        plt.title(f"Simulation result at t={t}")
-        plt.savefig(f"{dir500}/simulation_result_{t}.png", dpi=600)
-        np.save(f"{dir500}/simulation_result_{t}.npy", X)
+    # t = 0
+    # for i in timesteps:
+    #     print(X[...,0][5])
+    #     t += 1
+    #     delta_t = ((sp.dd * sp.dd) / sp.D_A) * 10
+    #     sp.timespan = i * delta_t
+    #     result, X = simulation_cuda(sp, X, lookup_al, lookup_cu)
+    #     plt.imshow(X[...,0].swapaxes(0, 1), cmap=cmap, vmin=0, vmax=1)
+    #     plt.title(f"Simulation result at t={t}")
+    #     plt.savefig(f"{dir500}/simulation_result_{t}.png", dpi=600)
+    #     np.save(f"{dir500}/simulation_result_{t}.npy", X)
         
         
 
-    # update lookpus and SimulationParams for 600
-    X = parse_image_air(image_path)[..., np.newaxis]  # Add a new axis to make it 3D
-    lookup_al_temp = pd.read_csv(lookup_path, sep=";", decimal=".")["a-Al(600)"].to_numpy()
-    lookup_cu = pd.read_csv(lookup_path, sep=";", decimal=".")["a-Cu(600)"].to_numpy()
-    lookup_al = lookup_al_temp[::-1]
-    sp.p_A = 2560.0
-    sp.p_B = 8625.0
+    # # update lookpus and SimulationParams for 600
+    # X = parse_image_air(image_path)[..., np.newaxis]  # Add a new axis to make it 3D
+    # lookup_al_temp = pd.read_csv(lookup_path, sep=";", decimal=".")["a-Al(600)"].to_numpy()
+    # lookup_cu = pd.read_csv(lookup_path, sep=";", decimal=".")["a-Cu(600)"].to_numpy()
+    # lookup_al = lookup_al_temp[::-1]
+    # sp.p_A = 2560.0
+    # sp.p_B = 8625.0
 
-    # plot results 600
-    dir600 = f"result/{EXPERIMENT_NAME}/600"
-    os.makedirs(dir600, exist_ok=True)
-    t = 0
-    for i in timesteps:
-        print(X[...,0][5])
-        t += 1
-        delta_t = (sp.dd * sp.dd) / sp.D_A
-        sp.timespan = i * delta_t
-        result, X = simulation_cuda(sp, X, lookup_al, lookup_cu)
-        plt.imshow(X[...,0].swapaxes(0, 1), cmap=cmap, vmin=0, vmax=1)
-        plt.title(f"Simulation result at t={t}")
-        plt.savefig(f"{dir600}/simulation_result_{t}.png", dpi=600)
-        np.save(f"{dir600}/simulation_result_{t}.npy", X)
+    # # plot results 600
+    # dir600 = f"result/{EXPERIMENT_NAME}/600"
+    # os.makedirs(dir600, exist_ok=True)
+    # t = 0
+    # for i in timesteps:
+    #     print(X[...,0][5])
+    #     t += 1
+    #     delta_t = ((sp.dd * sp.dd) / sp.D_A) * 10
+    #     sp.timespan = i * delta_t
+    #     result, X = simulation_cuda(sp, X, lookup_al, lookup_cu)
+    #     plt.imshow(X[...,0].swapaxes(0, 1), cmap=cmap, vmin=0, vmax=1)
+    #     plt.title(f"Simulation result at t={t}")
+    #     plt.savefig(f"{dir600}/simulation_result_{t}.png", dpi=600)
+    #     np.save(f"{dir600}/simulation_result_{t}.npy", X)
 
     # update lookpus and SimulationParams for 700
     X = parse_image_air(image_path)[..., np.newaxis]  # Add a new axis to make it 3D
-    lookup_al_temp = pd.read_csv(lookup_path, sep=";", decimal=".")["a-Al(700)"].to_numpy()
-    lookup_cu = pd.read_csv(lookup_path, sep=";", decimal=".")["a-Cu(700)"].to_numpy()
+    lookup_al_temp = pd.read_csv(alt_lookup_path, sep=";", decimal=".")["a-Al(700)"].to_numpy()
+    lookup_cu = pd.read_csv(alt_lookup_path, sep=";", decimal=".")["a-Cu(700)"].to_numpy()
     lookup_al = lookup_al_temp[::-1]
     sp.p_A = 2360.0
     sp.p_B = 8575.0
@@ -134,7 +135,7 @@ def run_simulation():
     for i in timesteps:
         print(X[...,0][5])
         t += 1
-        delta_t = (sp.dd * sp.dd) / sp.D_A
+        delta_t = ((sp.dd * sp.dd) / sp.D_A) * 10
         sp.timespan = i * delta_t
         result, X = simulation_cuda(sp, X, lookup_al, lookup_cu)
         plt.imshow(X[...,0].swapaxes(0, 1), cmap=cmap, vmin=0, vmax=1)
@@ -142,28 +143,28 @@ def run_simulation():
         plt.savefig(f"{dir700}/simulation_result_{t}.png", dpi=600)
         np.save(f"{dir700}/simulation_result_{t}.npy", X)
     
-    # update lookpus and SimulationParams for 800
-    X = parse_image_air(image_path)[..., np.newaxis]  # Add a new axis to make it 3D
-    lookup_al_temp = pd.read_csv(lookup_path, sep=";", decimal=".")["a-Al(800)"].to_numpy()
-    lookup_cu = pd.read_csv(lookup_path, sep=";", decimal=".")["a-Cu(800)"].to_numpy()
-    lookup_al = lookup_al_temp[::-1]
-    sp.p_A = 2335.0
-    sp.p_B = 8525.0
+    # # update lookpus and SimulationParams for 800
+    # X = parse_image_air(image_path)[..., np.newaxis]  # Add a new axis to make it 3D
+    # lookup_al_temp = pd.read_csv(lookup_path, sep=";", decimal=".")["a-Al(800)"].to_numpy()
+    # lookup_cu = pd.read_csv(lookup_path, sep=";", decimal=".")["a-Cu(800)"].to_numpy()
+    # lookup_al = lookup_al_temp[::-1]
+    # sp.p_A = 2335.0
+    # sp.p_B = 8525.0
 
-    # plot results 800
-    dir800 = f"result/{EXPERIMENT_NAME}/800"
-    os.makedirs(dir800, exist_ok=True)
-    t = 0
-    for i in timesteps:
-        print(X[...,0][5])
-        t += 1
-        delta_t = (sp.dd * sp.dd) / sp.D_A
-        sp.timespan = i * delta_t
-        result, X = simulation_cuda(sp, X, lookup_al, lookup_cu)
-        plt.imshow(X[...,0].swapaxes(0, 1), cmap=cmap, vmin=0, vmax=1)
-        plt.title(f"Simulation result at t={t}")
-        plt.savefig(f"{dir800}/simulation_result_{t}.png", dpi=600)
-        np.save(f"{dir800}/simulation_result_{t}.npy", X)
+    # # plot results 800
+    # dir800 = f"result/{EXPERIMENT_NAME}/800"
+    # os.makedirs(dir800, exist_ok=True)
+    # t = 0
+    # for i in timesteps:
+    #     print(X[...,0][5])
+    #     t += 1
+    #     delta_t = ((sp.dd * sp.dd) / sp.D_A) * 10
+    #     sp.timespan = i * delta_t
+    #     result, X = simulation_cuda(sp, X, lookup_al, lookup_cu)
+    #     plt.imshow(X[...,0].swapaxes(0, 1), cmap=cmap, vmin=0, vmax=1)
+    #     plt.title(f"Simulation result at t={t}")
+    #     plt.savefig(f"{dir800}/simulation_result_{t}.png", dpi=600)
+    #     np.save(f"{dir800}/simulation_result_{t}.npy", X)
 
 if __name__ == "__main__":
     result = run_simulation()
