@@ -3,7 +3,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def make_monotone(data: np.ndarray, rising=True):
+def make_monotone(data: np.ndarray):
+    rising = data[0] < data[-1]
     last_value = 0
     new_data = np.copy(data)
     for i in range(1, data.shape[0]):
@@ -20,15 +21,15 @@ infile = "/home/leo/Downloads/Equilib_Al-Fe _650K_bearbeitet.csv"
 df = pd.read_csv(infile, sep=",")
 
 monotone = make_monotone(np.array(df["a-Fe-alpha(A2)"]))
-monotone2 = make_monotone(np.array(df["a-Fe-alpha(A2)"])[::-1], rising=False)[::-1]
+monotone2 = make_monotone(np.array(df["a-Fe-alpha(A2)"])[::-1])[::-1]
 
 alpha = 0.5
 total = monotone * alpha + monotone2 * (alpha - 1)
 
 plt.plot(monotone, label="Rising", marker=".")
-# plt.plot(monotone2, label="Falling")
+plt.plot(monotone2, label="Falling")
 # plt.plot(total, label="Combined")
-plt.plot(np.array(df["a-Fe-alpha(A2)"]), label="Raw")
+# plt.plot(np.array(df["a-Fe-alpha(A2)"]), label="Raw")
 plt.legend()
 
 plt.show()
