@@ -24,11 +24,11 @@ monotone = make_monotone(np.array(df["a-Fe-alpha(A2)"]))
 monotone2 = make_monotone(np.array(df["a-Fe-alpha(A2)"])[::-1])[::-1]
 
 alpha = 0.5
-total = monotone * alpha + monotone2 * (alpha - 1)
+total = monotone * alpha + monotone2 * (1 - alpha)
 
 plt.plot(monotone, label="Rising", marker=".")
 plt.plot(monotone2, label="Falling")
-# plt.plot(total, label="Combined")
+plt.plot(total, label="Combined")
 # plt.plot(np.array(df["a-Fe-alpha(A2)"]), label="Raw")
 plt.legend()
 
