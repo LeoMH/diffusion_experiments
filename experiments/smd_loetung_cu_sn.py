@@ -15,8 +15,8 @@ def run_simulation():
     directory = f"result/{EXPERIMENT_NAME}"
     os.makedirs(directory, exist_ok=True)
     lookup_path = "lookup/Look-up_Aktivitätsverläufe_Cu-Sn_450°C_korrigiert.csv"
-    lookup_cu_temp = pd.read_csv(lookup_path, sep=";", decimal=".")["aCu"].to_numpy()
-    lookup_sn = pd.read_csv(lookup_path, sep=";", decimal=".")["aSn"].to_numpy()
+    lookup_cu_temp = pd.read_csv(lookup_path, sep=";", decimal=".", encoding="latin1")["aCu"].to_numpy()
+    lookup_sn = pd.read_csv(lookup_path, sep=";", decimal=".", encoding="latin1")["aSn"].to_numpy()
     lookup_cu = lookup_cu_temp[::-1]
     
     # create an instance of the SimulationParams structure (T=500)
@@ -66,7 +66,7 @@ def run_simulation():
     # image_path = "Cu-Sinterstruktur(200x200µm).tif"
     # image_path = "alubeispiel_cropped.tiff"
     # image_path = "air_image.tiff"
-    image_path = "images/rot_al_cu_v2.tiff"
+    image_path = "images/Modell_SMD-Lötung_unbeschriftet.tiff"
     # X = parse_image(image_path)[..., np.newaxis]  # Add a new axis to make it 3D
     X = parse_image_air(image_path)[..., np.newaxis]  # Add a new axis to make it 3D
     
@@ -86,11 +86,11 @@ def run_simulation():
         t += 1
         delta_t = ((sp.dd * sp.dd) / sp.D_A)
         sp.timespan = i * delta_t
-        result, X = simulation_cuda(sp, X, lookup_cu, lookup_sn)
+        result, X = simulation_cuda(sp, X, lookup_sn, lookup_cu)
         plt.imshow(X[...,0].swapaxes(0, 1), cmap=cmap, vmin=0, vmax=1)
         plt.title(f"Simulation result at t={t}")
-        plt.savefig(f"simulation_result_{t}.png", dpi=600)
-        np.save(f"simulation_result_{t}.npy", X)
+        plt.savefig(f"{directory}/simulation_result_{t}.png", dpi=600)
+        np.save(f"{directory}/simulation_result_{t}.npy", X)
    
 
 if __name__ == "__main__":
