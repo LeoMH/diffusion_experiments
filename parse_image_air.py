@@ -38,9 +38,9 @@ def parse_image_air(image_path):
         raise ValueError("Image has more than 2 dimensions and cannot be converted to grayscale.")
 
     # Threshold the data to be between 0 and 1 and air to be -1
-    A = np.logical_and(data < 0.8, data >= 0.4)
+    B = np.logical_and(data < 0.8, data >= 0.4)
     air = data < 0.4
-    B  = data >= 0.8
+    A  = data >= 0.8
 
     data[A] = 1.0
     data[air] = -1.0
