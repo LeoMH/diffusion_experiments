@@ -38,7 +38,7 @@ original_data = np.array(df["a-Al(A1)"])
 org_a = original_data[:626]
 org_b = original_data[626:]
 original_data_log = np.log(original_data)
-print(original_data_log.shape)
+# print(original_data_log.shape)
 
 monotone = make_monotone(np.array(df["a-Al(A1)"]))
 monotone2 = make_monotone(np.array(df["a-Al(A1)"])[::-1])[::-1]
@@ -48,12 +48,14 @@ total = monotone * alpha + monotone2 * (1 - alpha)
 
 monotone_log = np.log(monotone)
 monotone2_log = np.log(monotone2)
-total_log = np.log(total)
+total_log = np.log(total) 
 
-plt.plot(monotone_log, label="Rising", marker=".")
-plt.plot(monotone2_log, label="Falling")
+print(original_data_log[original_data_log.shape[0]-2]) # --> -26.236041778634608
+
+# plt.plot(monotone_log, label="Rising", marker=".")
+# plt.plot(monotone2_log, label="Falling")
 # plt.plot(total_log, label="Combined")
-plt.plot(original_data_log, label="Original")
+plt.plot(original_data_log, label="Original", linewidth=0.5)
 # plt.plot(np.array(df["a-Fe-alpha(A2)"]), label="Raw")
 plt.legend()
 
@@ -63,8 +65,8 @@ plt.show()
 # name_col = "a-Al(650K)"
 # write_column_first(csv_path, total, name_col)
 
-# original_data_b = np.array(df["a-Fe-alpha(A2)"])
-# original_data_b_log = np.log(original_data_b)
+original_data_b = np.array(df["a-Fe-alpha(A2)"])
+original_data_b_log = np.log(original_data_b)
 
 # monotone_b = make_monotone(np.array(df["a-Fe-alpha(A2)"]))
 # monotone2_b = make_monotone(np.array(df["a-Fe-alpha(A2)"])[::-1])[::-1]
@@ -75,11 +77,11 @@ plt.show()
 # plt.plot(monotone_b, label="Rising", marker=".")
 # plt.plot(monotone2_b, label="Falling")
 # plt.plot(total_b, label="Combined")
-# plt.plot(original_data_b_log, label="Original")
+plt.plot(original_data_b_log, label="Original")
 # plt.plot(np.array(df["a-Fe-alpha(A2)"]), label="Raw")
-# plt.legend()
+plt.legend()
 
-# plt.show()
+plt.show()
 
 # csv_path = "lookup\Activities_Al-Fe_edited.csv"
 # name_col = "a-Fe-alpha(650K)"
@@ -87,11 +89,12 @@ plt.show()
 
 # 800K
 
-# infile = "lookup\Activities_Al-Fe_800K.csv"
+infile = "lookup/Activities_Al-Fe_800K.csv"
 
-# df = pd.read_csv(infile, sep=",")
+df = pd.read_csv(infile, sep=",")
 
-# original_data = np.array(df["a-Al(A1)"])
+original_data = np.array(df["a-Al(A1)"])
+original_data_log = np.log(original_data)
 
 # monotone = make_monotone(np.array(df["a-Al(A1)"]))
 # monotone2 = make_monotone(np.array(df["a-Al(A1)"])[::-1])[::-1]
@@ -102,17 +105,18 @@ plt.show()
 # plt.plot(monotone, label="Rising", marker=".")
 # plt.plot(monotone2, label="Falling")
 # plt.plot(total, label="Combined")
-# plt.plot(original_data, label="Original")
+plt.plot(original_data_log, label="Original")
 # # plt.plot(np.array(df["a-Fe-alpha(A2)"]), label="Raw")
-# plt.legend()
+plt.legend()
 
-# plt.show()
+plt.show()
 
 # csv_path = "lookup\Activities_Al-Fe_edited.csv"
 # name_col = "a-Al(800K)"
 # write_column(csv_path, total, name_col)
 
-# original_data_b = np.array(df["a-Fe-alpha(A2)"])
+original_data_b = np.array(df["a-Fe-alpha(A2)"])
+original_data_b_log = np.log(original_data_b)
 
 # monotone_b = make_monotone(np.array(df["a-Fe-alpha(A2)"]))
 # monotone2_b = make_monotone(np.array(df["a-Fe-alpha(A2)"])[::-1])[::-1]
@@ -123,11 +127,11 @@ plt.show()
 # plt.plot(monotone_b, label="Rising", marker=".")
 # plt.plot(monotone2_b, label="Falling")
 # plt.plot(total_b, label="Combined")
-# plt.plot(original_data_b, label="Original")
+plt.plot(original_data_b_log, label="Original")
 # # plt.plot(np.array(df["a-Fe-alpha(A2)"]), label="Raw")
-# plt.legend()
+plt.legend()
 
-# plt.show()
+plt.show()
 
 # csv_path = "lookup\Activities_Al-Fe_edited.csv"
 # name_col = "a-Fe-alpha(800K)"

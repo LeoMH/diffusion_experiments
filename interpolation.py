@@ -15,7 +15,7 @@ def write_column(path, data: np.ndarray, col_name: str):
     df[f'{col_name}'] = column 
     df.to_csv(csv_file_path, index=False)
 
-infile = "lookup\Activities_Al-Fe_edited.csv"
+infile = "lookup/Activities_Al-Fe_edited.csv"
 
 df = pd.read_csv(infile, sep=",")
 
@@ -40,22 +40,46 @@ aAl_750_d = np.exp(aAl_750)
 
 # Plot
 
-plt.plot(aAl_650_d, label="650")
-plt.plot(aAl_700_d, label="700")
-plt.plot(aAl_750_d, label="750")
-plt.plot(aAl_800_d, label="800")
+plt.plot(aAl_650, label="650")
+plt.plot(aAl_700, label="700")
+plt.plot(aAl_750, label="750")
+plt.plot(aAl_800, label="800")
 plt.legend(loc=10)
 
 plt.show()
 
 # activities for Fe
 
-aFe_650_d = 1 - aAl_650_d
-aFe_700_d = 1 - aAl_700_d
-aFe_750_d = 1 - aAl_750_d
-aFe_800_d = 1 - aAl_800_d
+aFe_650_d = np.array(df["a-Fe(650K)"])
+aFe_800_d = np.array(df["a-Fe(800K)"])
 
-csv_path = "lookup\Activities_Al-Fe_complete.csv"
+aFe_650 = np.log(aFe_650_d)
+aFe_800 = np.log(aFe_800_d)
+
+A = (np.log(aFe_650_d/aFe_800_d))/((1/650)-(1/800))
+B = np.log(aFe_650_d) - A * (1/650)
+
+# T = 700
+
+aFe_700 = (A/700) + B
+aFe_700_d = np.exp(aFe_700)
+ 
+# T = 750
+
+aFe_750 = (A/750) + B
+aFe_750_d = np.exp(aFe_750)
+
+# Plot
+
+plt.plot(aFe_650, label="650")
+plt.plot(aFe_700, label="700")
+plt.plot(aFe_750, label="750")
+plt.plot(aFe_800, label="800")
+plt.legend(loc=10)
+
+plt.show()
+
+csv_path = "lookup/Activities_Al-Fe_complete.csv"
 name_col = "a-Al(650K)"
 write_column_first(csv_path, aAl_650_d, name_col)
 name_col = "a-Fe(650K)"
