@@ -20,7 +20,7 @@ def run_simulation():
     lookup_path = "lookup/Activities_Al-Fe_complete.csv"
     lookup_al_temp = pd.read_csv(lookup_path, sep=",", decimal=".")["a-Al(650K)"].to_numpy()
     lookup_fe = pd.read_csv(lookup_path, sep=",", decimal=".")["a-Fe(650K)"].to_numpy()
-    lookup_al = lookup_al_temp[::-1]
+    lookup_al = lookup_al_temp
     
     # create an instance of the SimulationParams structure (T=650K)
     # TODO: update density values for 650K
@@ -107,7 +107,7 @@ def run_simulation():
     X = parse_image_air(image_path)[..., np.newaxis]  # Add a new axis to make it 3D
     lookup_al_temp = pd.read_csv(lookup_path, sep=",", decimal=".")["a-Al(700K)"].to_numpy()
     lookup_fe = pd.read_csv(lookup_path, sep=",", decimal=".")["a-Fe(700K)"].to_numpy()
-    lookup_al = lookup_al_temp[::-1]
+    lookup_al = lookup_al_temp
     sp.p_A = 2515.0
 
     # plot results 700
@@ -132,7 +132,7 @@ def run_simulation():
     X = parse_image_air(image_path)[..., np.newaxis]  # Add a new axis to make it 3D
     lookup_al_temp = pd.read_csv(lookup_path, sep=",", decimal=".")["a-Al(750K)"].to_numpy()
     lookup_fe = pd.read_csv(lookup_path, sep=",", decimal=".")["a-Fe(750K)"].to_numpy()
-    lookup_al = lookup_al_temp[::-1]
+    lookup_al = lookup_al_temp
     sp.p_A = 2605.0
 
     # plot results 750
@@ -157,7 +157,7 @@ def run_simulation():
     X = parse_image_air(image_path)[..., np.newaxis]  # Add a new axis to make it 3D
     lookup_al_temp = pd.read_csv(lookup_path, sep=",", decimal=".")["a-Al(800K)"].to_numpy()
     lookup_fe = pd.read_csv(lookup_path, sep=",", decimal=".")["a-Fe(800K)"].to_numpy()
-    lookup_al = lookup_al_temp[::-1]
+    lookup_al = lookup_al_temp
     sp.p_A = 2595.0
 
     # plot results 800
