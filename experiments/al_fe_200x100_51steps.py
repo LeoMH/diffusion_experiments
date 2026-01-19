@@ -11,7 +11,7 @@ import os
 
 from parse_image_air import parse_image_air
 
-EXPERIMENT_NAME = "al_fe_200x100"
+EXPERIMENT_NAME = "al_fe_200x100_51steps"
 
 # call the function
 def run_simulation():
@@ -85,12 +85,14 @@ def run_simulation():
     # plot results 650
     dir650 = f"result/{EXPERIMENT_NAME}/650"
     os.makedirs(dir650, exist_ok=True)
-    
     t = 0
-    for i in range(0,31000,1000):
+    with open(f'{dir650}/result.csv', 'a', newline='') as csvfile:
+            csvwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            csvwriter.writerow([t, *X[...,0][50]])
+    for i in range(0,204000,4000):
         t += 1
         delta_t = ((sp.dd * sp.dd) / d_a_mean)
-        sp.timespan = 1000 * delta_t
+        sp.timespan = 4000 * delta_t
         result, X = simulation_cuda(sp, X, lookup_al, lookup_fe)
         plt.imshow(X[...,0].swapaxes(0, 1), cmap=cmap, vmin=0, vmax=1)
         plt.title(f"Simulation result at t={t}")
@@ -114,10 +116,13 @@ def run_simulation():
     dir700 = f"result/{EXPERIMENT_NAME}/700"
     os.makedirs(dir700, exist_ok=True)
     t = 0
-    for i in range(0,31000,1000):
+    with open(f'{dir700}/result.csv', 'a', newline='') as csvfile:
+            csvwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            csvwriter.writerow([t, *X[...,0][50]])
+    for i in range(0,204000,4000):
         t += 1
         delta_t = (sp.dd * sp.dd) / d_a_mean
-        sp.timespan = 1000 * delta_t
+        sp.timespan = 4000 * delta_t
         result, X = simulation_cuda(sp, X, lookup_al, lookup_fe)
         plt.imshow(X[...,0].swapaxes(0, 1), cmap=cmap, vmin=0, vmax=1)
         plt.title(f"Simulation result at t={t}")
@@ -139,10 +144,13 @@ def run_simulation():
     dir750 = f"result/{EXPERIMENT_NAME}/750"
     os.makedirs(dir750, exist_ok=True)
     t = 0
-    for i in range(0,31000,1000):
+    with open(f'{dir750}/result.csv', 'a', newline='') as csvfile:
+            csvwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            csvwriter.writerow([t, *X[...,0][50]])
+    for i in range(0,204000,4000):
         t += 1
         delta_t = (sp.dd * sp.dd) / d_a_mean
-        sp.timespan = 1000 * delta_t
+        sp.timespan = 4000 * delta_t
         result, X = simulation_cuda(sp, X, lookup_al, lookup_fe)
         plt.imshow(X[...,0].swapaxes(0, 1), cmap=cmap, vmin=0, vmax=1)
         plt.title(f"Simulation result at t={t}")
@@ -164,10 +172,13 @@ def run_simulation():
     dir800 = f"result/{EXPERIMENT_NAME}/800"
     os.makedirs(dir800, exist_ok=True)
     t = 0
-    for i in range(0,31000,1000):
+    with open(f'{dir800}/result.csv', 'a', newline='') as csvfile:
+            csvwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            csvwriter.writerow([t, *X[...,0][50]])
+    for i in range(0,204000,4000):
         t += 1
         delta_t = (sp.dd * sp.dd) / d_a_mean
-        sp.timespan = 1000 * delta_t
+        sp.timespan = 4000 * delta_t
         result, X = simulation_cuda(sp, X, lookup_al, lookup_fe)
         plt.imshow(X[...,0].swapaxes(0, 1), cmap=cmap, vmin=0, vmax=1)
         plt.title(f"Simulation result at t={t}")
