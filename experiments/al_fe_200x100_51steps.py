@@ -82,23 +82,28 @@ def run_simulation():
 
     d_a_mean = 1.6e-14
 
+    it_steps = 6000
+    steps_to_save = 51
+    total_steps = it_steps*steps_to_save
+
     # plot results 650
-    dir650 = f"result/{EXPERIMENT_NAME}/650"
+    temperature = 650
+    dir650 = f"result/{EXPERIMENT_NAME}/{temperature}"
     os.makedirs(dir650, exist_ok=True)
     t = 0
-    with open(f'{dir650}/result.csv', 'a', newline='') as csvfile:
+    with open(f'{dir650}/result_{temperature}.csv', 'a', newline='') as csvfile:
             csvwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             csvwriter.writerow([t, *X[...,0][50]])
-    for i in range(0,204000,4000):
+    for i in range(0,total_steps,it_steps):
         t += 1
         delta_t = ((sp.dd * sp.dd) / d_a_mean)
-        sp.timespan = 4000 * delta_t
+        sp.timespan = it_steps * delta_t
         result, X = simulation_cuda(sp, X, lookup_al, lookup_fe)
         plt.imshow(X[...,0].swapaxes(0, 1), cmap=cmap, vmin=0, vmax=1)
         plt.title(f"Simulation result at t={t}")
         plt.savefig(f"{dir650}/simulation_result_{t}.png", dpi=600)
         np.save(f"{dir650}/simulation_result_{t}.npy", X)
-        with open(f'{dir650}/result.csv', 'a', newline='') as csvfile:
+        with open(f'{dir650}/result_{temperature}.csv', 'a', newline='') as csvfile:
             csvwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             csvwriter.writerow([t, *X[...,0][50]])
         
@@ -113,22 +118,23 @@ def run_simulation():
     sp.p_A = 2515.0
 
     # plot results 700
-    dir700 = f"result/{EXPERIMENT_NAME}/700"
+    temperature = 700
+    dir700 = f"result/{EXPERIMENT_NAME}/{temperature}"
     os.makedirs(dir700, exist_ok=True)
     t = 0
-    with open(f'{dir700}/result.csv', 'a', newline='') as csvfile:
+    with open(f'{dir700}/result_{temperature}.csv', 'a', newline='') as csvfile:
             csvwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             csvwriter.writerow([t, *X[...,0][50]])
-    for i in range(0,204000,4000):
+    for i in range(0,total_steps,it_steps):
         t += 1
-        delta_t = (sp.dd * sp.dd) / d_a_mean
-        sp.timespan = 4000 * delta_t
+        delta_t = ((sp.dd * sp.dd) / d_a_mean)
+        sp.timespan = it_steps * delta_t
         result, X = simulation_cuda(sp, X, lookup_al, lookup_fe)
         plt.imshow(X[...,0].swapaxes(0, 1), cmap=cmap, vmin=0, vmax=1)
         plt.title(f"Simulation result at t={t}")
         plt.savefig(f"{dir700}/simulation_result_{t}.png", dpi=600)
         np.save(f"{dir700}/simulation_result_{t}.npy", X)
-        with open(f'{dir700}/result.csv', 'a', newline='') as csvfile:
+        with open(f'{dir700}/result_{temperature}.csv', 'a', newline='') as csvfile:
             csvwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             csvwriter.writerow([t, *X[...,0][50]])
 
@@ -141,22 +147,23 @@ def run_simulation():
     sp.p_A = 2605.0
 
     # plot results 750
-    dir750 = f"result/{EXPERIMENT_NAME}/750"
+    temperature = 750
+    dir750 = f"result/{EXPERIMENT_NAME}/{temperature}"
     os.makedirs(dir750, exist_ok=True)
     t = 0
-    with open(f'{dir750}/result.csv', 'a', newline='') as csvfile:
+    with open(f'{dir750}/result_{temperature}.csv', 'a', newline='') as csvfile:
             csvwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             csvwriter.writerow([t, *X[...,0][50]])
-    for i in range(0,204000,4000):
+    for i in range(0,total_steps,it_steps):
         t += 1
-        delta_t = (sp.dd * sp.dd) / d_a_mean
-        sp.timespan = 4000 * delta_t
+        delta_t = ((sp.dd * sp.dd) / d_a_mean)
+        sp.timespan = it_steps * delta_t
         result, X = simulation_cuda(sp, X, lookup_al, lookup_fe)
         plt.imshow(X[...,0].swapaxes(0, 1), cmap=cmap, vmin=0, vmax=1)
         plt.title(f"Simulation result at t={t}")
         plt.savefig(f"{dir750}/simulation_result_{t}.png", dpi=600)
         np.save(f"{dir750}/simulation_result_{t}.npy", X)
-        with open(f'{dir750}/result.csv', 'a', newline='') as csvfile:
+        with open(f'{dir750}/result_{temperature}.csv', 'a', newline='') as csvfile:
             csvwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             csvwriter.writerow([t, *X[...,0][50]])
     
@@ -169,22 +176,23 @@ def run_simulation():
     sp.p_A = 2595.0
 
     # plot results 800
-    dir800 = f"result/{EXPERIMENT_NAME}/800"
+    temperature = 800
+    dir800 = f"result/{EXPERIMENT_NAME}/{temperature}"
     os.makedirs(dir800, exist_ok=True)
     t = 0
-    with open(f'{dir800}/result.csv', 'a', newline='') as csvfile:
+    with open(f'{dir800}/result_{temperature}.csv', 'a', newline='') as csvfile:
             csvwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             csvwriter.writerow([t, *X[...,0][50]])
-    for i in range(0,204000,4000):
+    for i in range(0,total_steps,it_steps):
         t += 1
-        delta_t = (sp.dd * sp.dd) / d_a_mean
-        sp.timespan = 4000 * delta_t
+        delta_t = ((sp.dd * sp.dd) / d_a_mean)
+        sp.timespan = it_steps * delta_t
         result, X = simulation_cuda(sp, X, lookup_al, lookup_fe)
         plt.imshow(X[...,0].swapaxes(0, 1), cmap=cmap, vmin=0, vmax=1)
         plt.title(f"Simulation result at t={t}")
         plt.savefig(f"{dir800}/simulation_result_{t}.png", dpi=600)
         np.save(f"{dir800}/simulation_result_{t}.npy", X)
-        with open(f'{dir800}/result.csv', 'a', newline='') as csvfile:
+        with open(f'{dir800}/result_{temperature}.csv', 'a', newline='') as csvfile:
             csvwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             csvwriter.writerow([t, *X[...,0][50]])
 
