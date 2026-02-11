@@ -9,6 +9,7 @@ from diffusion_cuda.simulation_wrapper import SimulationParams, simulation_cuda
 import numpy as np
 import os
 import math
+import ctypes
 
 from parse_image_air import parse_image_air
 
@@ -56,12 +57,12 @@ def run_simulation():
     cmap.set_under("black")
     cmap.set_over("black")
 
-    image_path = "images/"
+    image_path = "images/cu_sn_temp_test.tiff"
     X = parse_image_air(image_path)[..., np.newaxis]  # Add a new axis to make it 3D
     
     plt.imshow(X[...,0].swapaxes(0, 1), cmap=cmap,  vmin=0, vmax=1)
     plt.colorbar()
-    plt.title(f"Simulation result at t=0")
+    plt.title(f"Simulation result at t = 0 s")
     plt.savefig(f"{directory}/simulation_begin.png",dpi=600)
     np.save(f"{directory}/simulation_begin.npy", X)
 
@@ -69,14 +70,26 @@ def run_simulation():
     temps = [234.00, 233.00, 232.00, 231.00, 230.00, 229.00, 228.00, 227.00, 226.00]
     temps_int = [234, 233, 232, 231, 230, 229, 228, 227, 226]
 
-    lookup_path = "lookup/Activities_Al-Fe_complete.csv"
+    lookup_path = "lookup/Activities_Cu-Sn_226°C-234°C.csv"
     lookup_cu_temp = pd.read_csv(lookup_path, sep=",", decimal=".")["aCu"].to_numpy()
     lookup_cu_temp = convert_lookup(lookup_cu_temp)
     lookup_sn_temp = pd.read_csv(lookup_path, sep=",", decimal=".")["aSn"].to_numpy()
     lookup_sn_temp = convert_lookup(lookup_sn_temp)
     lookup_sn_temp = lookup_sn_temp[::-1]
 
+    # create an instance of the SimulationParams structure (T=500)
+    sp = SimulationParams()
+    sp.m_A = 0.0270
+    sp.m_B = 0.0635
+    sp.D_A = 4e-9
+    sp.D_B = 4e-9
+    sp.dd = 5e-10
+    num_cells = X.shape[0] # / sp.dd ?
+    sp.num_temps = num_cells
+
     for i in range(0,8):
+        t = i * 1.25
+
         # in ausgelagerter Funktion: Temperaturen interpolieren + lookup berechnen
         t1 = temps[i]
         t2 = temps[i+1]
@@ -85,18 +98,31 @@ def run_simulation():
         lookup_sn_t1 = lookup_sn_temp[:,i]
         lookup_sn_t2 = lookup_sn_temp[:,i+1]
 
-        new_temps = temp_interpolation(t1, t2, 500)
+        new_temps = temp_interpolation(t1, t2, num_cells)
         lookup_cu = create_lookup(t1, t2, lookup_cu_t1, lookup_cu_t2, new_temps)
         lookup_sn = create_lookup(t1, t2, lookup_sn_t1, lookup_sn_t2, new_temps)
+        
         # TODO: Simulations Parameter bestimmen
-
+        sp.p_A = 2595.0
+        sp.p_B = 8675.0
+        
         # TODO: delta_t und sp.timespan bestimmen
+        delta_t = ((sp.dd * sp.dd) / sp.D_A)
+        sp.timespan = i * delta_t
+
+        #TODO: sp.temps bestimmen
+        idx = np.arange(num_cells, dtype=np.uint64)
+        temp_idx = idx[:, None, None]
+        temp_idx = np.broadcast_to(temp_idx, X.shape)
+        temp_idx_ctypes = temp_idx.ctypes.data_as(ctypes.POINTER(ctypes.c_ulong))
+        sp.temps = temp_idx_ctypes
 
         # run simulation cuda
         result, X = simulation_cuda(sp, X, lookup_cu, lookup_sn)
+
         # Ergebnisse speichern
         plt.imshow(X[...,0].swapaxes(0, 1), cmap=cmap, vmin=0, vmax=1)
-        plt.title(f"Simulation result at t={t}")
+        plt.title(f"Simulation result at t = {t} s\nTemperature = {t1} -- {t2}")
         plt.savefig(f"{directory}/simulation_result_{t}.png", dpi=600)
         np.save(f"{directory}/simulation_result_{t}.npy", X)
 
@@ -126,8 +152,12 @@ def create_lookup(t1, t2, a_t1, a_t2, new_temps):
     B = np.log(a_t1) - (A/t1)
     result = a_t1
     for i in new_temps:
-        if(i == t1 | i == t2):
+        if(i == t1 or i == t2):
             continue
         new_column = np.exp((A/i)+B)
         result = np.column_stack((result, new_column))
     return result
+
+if __name__ == "__main__":
+    result = run_simulation()
+    print(f"Simulation result: {result}")
