@@ -10,15 +10,17 @@ import os
 
 from parse_image_air import parse_image_air
 
-EXPERIMENT_NAME = "smd_loetung_cu_sn"
+EXPERIMENT_NAME = "smd_cu_sn_new"
 
 # call the function
 def run_simulation():
     directory = f"result/{EXPERIMENT_NAME}"
     os.makedirs(directory, exist_ok=True)
-    lookup_path = "lookup/Look-up_Aktivitätsverläufe_Cu-Sn_450°C_korrigiert.csv"
-    lookup_cu_temp = pd.read_csv(lookup_path, sep=";", decimal=".", encoding="latin1")["aCu"].to_numpy()
-    lookup_sn = pd.read_csv(lookup_path, sep=";", decimal=".", encoding="latin1")["aSn"].to_numpy()
+    lookup_path = "lookup/Activities_Cu-Sn_226°C-234°C.csv"
+    lookup_cu_temp = pd.read_csv(lookup_path, sep=",", decimal=".")["aCu"].to_numpy()
+    lookup_cu_temp = convert_lookup(lookup_cu_temp)[:,0]
+    lookup_sn = pd.read_csv(lookup_path, sep=",", decimal=".")["aSn"].to_numpy()
+    lookup_sn = convert_lookup(lookup_sn)[:,0]
     lookup_cu = lookup_cu_temp[::-1]
     
     # create an instance of the SimulationParams structure (T=500)
@@ -51,10 +53,10 @@ def run_simulation():
 
     cdict2 = [
         (0.00, gelb),
-        (0.05, gruen),
-        (0.10, pflaume),
-        (0.15, blau),
-        (0.20, hellblau),
+        (0.20, gruen),
+        (0.40, pflaume),
+        (0.60, blau),
+        (0.80, hellblau),
         (1.00, hellgrau),
     ]
 
@@ -68,13 +70,13 @@ def run_simulation():
     # image_path = "Cu-Sinterstruktur(200x200µm).tif"
     # image_path = "alubeispiel_cropped.tiff"
     # image_path = "air_image.tiff"
-    image_path = "images/Modell_SMD-Lötung_unbeschriftet.tiff"
+    image_path = "images/Geometrie2_SMD_(2µm).tiff"
     # X = parse_image(image_path)[..., np.newaxis]  # Add a new axis to make it 3D
     X = parse_image_air(image_path)[..., np.newaxis]  # Add a new axis to make it 3D
     
     timesteps = [4000, 2420, 3885, 6236, 10008, 16065, 25785, 41387, 66431, 106626, 171144, 274701, 440919, 707713, 1135940, 1823282, 2966525, 4697324, 7539609] # total: 20000000
     
-    plt.imshow(X[...,0].swapaxes(0, 1), cmap=cmap,  vmin=0, vmax=1)
+    plt.imshow(X[...,0], cmap=cmap,  vmin=0, vmax=1)
     plt.colorbar()
     plt.title(f"Simulation result at t=0")
     plt.savefig(f"{directory}/simulation_begin.png",dpi=600)
@@ -84,16 +86,18 @@ def run_simulation():
     
     t = 0
     for i in timesteps:
-        print(X[...,0][5])
         t += 1
         delta_t = ((sp.dd * sp.dd) / sp.D_A)
         sp.timespan = i * delta_t
         result, X = simulation_cuda(sp, X, lookup_sn, lookup_cu)
-        plt.imshow(X[...,0].swapaxes(0, 1), cmap=cmap, vmin=0, vmax=1)
+        plt.imshow(X[...,0], cmap=cmap, vmin=0, vmax=1)
         plt.title(f"Simulation result at t={t}")
         plt.savefig(f"{directory}/simulation_result_{t}.png", dpi=600)
         np.save(f"{directory}/simulation_result_{t}.npy", X)
    
+def convert_lookup(arr : np.array):
+    arrays = np.split(arr, 1001)
+    return np.vstack(arrays)
 
 if __name__ == "__main__":
     result = run_simulation()
