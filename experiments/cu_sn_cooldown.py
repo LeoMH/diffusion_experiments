@@ -106,19 +106,19 @@ def run_simulation():
         sp.p_A = 2595.0
         sp.p_B = 8675.0
         
-        # TODO: delta_t und sp.timespan bestimmen
+        # delta_t und sp.timespan bestimmen
         delta_t = ((sp.dd * sp.dd) / sp.D_A)
         sp.timespan = i * delta_t
 
         #TODO: sp.temps bestimmen
-        idx = np.arange(num_cells, dtype=np.uint64)
+        idx = np.arange(num_cells, dtype=np.uintp)
         temp_idx = idx[:, None, None]
         temp_idx = np.broadcast_to(temp_idx, X.shape)
-        temp_idx_ctypes = temp_idx.ctypes.data_as(ctypes.POINTER(ctypes.c_ulong))
-        sp.temps = temp_idx_ctypes
+        # temp_idx_ctypes = temp_idx.ctypes.data_as(ctypes.POINTER(ctypes.c_ulong))
+        # sp.temps = temp_idx
 
         # run simulation cuda
-        result, X = simulation_cuda(sp, X, lookup_cu, lookup_sn)
+        result, X = simulation_cuda(sp, X, lookup_cu, lookup_sn, temp_idx)
 
         # Ergebnisse speichern
         plt.imshow(X[...,0].swapaxes(0, 1), cmap=cmap, vmin=0, vmax=1)
