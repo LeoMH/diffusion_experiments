@@ -76,13 +76,14 @@ def run_simulation():
     lookup_sn_temp = pd.read_csv(lookup_path, sep=",", decimal=".")["aSn"].to_numpy()
     lookup_sn_temp = convert_lookup(lookup_sn_temp)
     lookup_sn_temp = lookup_sn_temp[::-1]
+    
 
     # create an instance of the SimulationParams structure (T=500)
     sp = SimulationParams()
     sp.m_A = 0.0270
     sp.m_B = 0.0635
-    sp.D_A = 4e-9
-    sp.D_B = 4e-9
+    sp.D_A = 4e-15
+    sp.D_B = 4e-15
     sp.dd = 5e-10
     num_cells = X.shape[0] # / sp.dd ?
     sp.num_temps = num_cells
@@ -102,13 +103,16 @@ def run_simulation():
         lookup_cu = create_lookup(t1, t2, lookup_cu_t1, lookup_cu_t2, new_temps)
         lookup_sn = create_lookup(t1, t2, lookup_sn_t1, lookup_sn_t2, new_temps)
         
+
         # TODO: Simulations Parameter bestimmen
         sp.p_A = 2595.0
         sp.p_B = 8675.0
         
         # delta_t und sp.timespan bestimmen
         delta_t = ((sp.dd * sp.dd) / sp.D_A)
-        sp.timespan = i * delta_t
+        sp.timespan = 1250 * delta_t
+        # sp.timespan = 0.375
+        print(f"timespan: {sp.timespan}, delta_t: {delta_t}")
 
         #TODO: sp.temps bestimmen
         idx = np.arange(num_cells, dtype=np.uintp)
