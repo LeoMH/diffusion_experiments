@@ -60,7 +60,7 @@ def run_simulation():
     image_path = "images/cu_sn_temp_test.tiff"
     X = parse_image_air(image_path)[..., np.newaxis]  # Add a new axis to make it 3D
     
-    plt.imshow(X[...,0].swapaxes(0, 1), cmap=cmap,  vmin=0, vmax=1)
+    plt.imshow(X[...,0], cmap=cmap,  vmin=0, vmax=1)
     plt.colorbar()
     plt.title(f"Simulation result at t = 0 s")
     plt.savefig(f"{directory}/simulation_begin.png",dpi=600)
@@ -82,14 +82,14 @@ def run_simulation():
     sp = SimulationParams()
     sp.m_A = 0.0270
     sp.m_B = 0.0635
-    sp.D_A = 4e-15
-    sp.D_B = 4e-15
+    sp.D_A = 4e-9
+    sp.D_B = 4e-9
     sp.dd = 5e-10
     num_cells = X.shape[0] # / sp.dd ?
     sp.num_temps = num_cells
 
     for i in range(0,8):
-        t = i * 1.25
+        t = i * 1250
 
         # in ausgelagerter Funktion: Temperaturen interpolieren + lookup berechnen
         t1 = temps[i]
@@ -102,6 +102,8 @@ def run_simulation():
         new_temps = temp_interpolation(t1, t2, num_cells)
         lookup_cu = create_lookup(t1, t2, lookup_cu_t1, lookup_cu_t2, new_temps)
         lookup_sn = create_lookup(t1, t2, lookup_sn_t1, lookup_sn_t2, new_temps)
+        np.savetxt(f"testSn_{i}.txt", lookup_sn)
+        np.savetxt(f"testCu_{i}.txt", lookup_cu)
         
 
         # TODO: Simulations Parameter bestimmen
@@ -110,9 +112,9 @@ def run_simulation():
         
         # delta_t und sp.timespan bestimmen
         delta_t = ((sp.dd * sp.dd) / sp.D_A)
-        sp.timespan = 1250 * delta_t
+        sp.timespan = t * delta_t
         # sp.timespan = 0.375
-        print(f"timespan: {sp.timespan}, delta_t: {delta_t}")
+        # print(f"timespan: {sp.timespan}, delta_t: {delta_t}")
 
         #TODO: sp.temps bestimmen
         idx = np.arange(num_cells, dtype=np.uintp)
@@ -124,8 +126,10 @@ def run_simulation():
         # run simulation cuda
         result, X = simulation_cuda(sp, X, lookup_cu, lookup_sn, temp_idx)
 
+        # print(f"Min X: {np.min(X)}")
+
         # Ergebnisse speichern
-        plt.imshow(X[...,0].swapaxes(0, 1), cmap=cmap, vmin=0, vmax=1)
+        plt.imshow(X[...,0], cmap=cmap, vmin=0, vmax=1)
         plt.title(f"Simulation result at t = {t} s\nTemperature = {t1} -- {t2}")
         plt.savefig(f"{directory}/simulation_result_{t}.png", dpi=600)
         np.save(f"{directory}/simulation_result_{t}.npy", X)
