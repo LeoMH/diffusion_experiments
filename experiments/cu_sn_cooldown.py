@@ -63,7 +63,7 @@ def run_simulation():
     plt.imshow(X[...,0], cmap=cmap,  vmin=0, vmax=1)
     plt.colorbar()
     plt.title(f"Simulation result at t = 0 s")
-    plt.savefig(f"{directory}/simulation_begin.png",dpi=600)
+    plt.savefig(f"{directory}/simulation_begin.png", dpi=600, bbox_inches='tight')
     np.save(f"{directory}/simulation_begin.npy", X)
 
     t = 0
@@ -87,9 +87,10 @@ def run_simulation():
     sp.dd = 5e-10
     num_cells = X.shape[0] # / sp.dd ?
     sp.num_temps = num_cells
+    timespan = 1250 # 1.25 Sekunden?
 
     for i in range(0,8):
-        t = i * 1250
+        t = i * 1.250 + 1.250
 
         # in ausgelagerter Funktion: Temperaturen interpolieren + lookup berechnen
         t1 = temps[i]
@@ -106,13 +107,13 @@ def run_simulation():
         np.savetxt(f"testCu_{i}.txt", lookup_cu)
         
 
-        # TODO: Simulations Parameter bestimmen
+        # TODO: Simulations Parameter bestimmen (abhängig von Temperatur)
         sp.p_A = 2595.0
         sp.p_B = 8675.0
         
         # delta_t und sp.timespan bestimmen
         delta_t = ((sp.dd * sp.dd) / sp.D_A)
-        sp.timespan = t * delta_t
+        sp.timespan = timespan * delta_t
         # sp.timespan = 0.375
         # print(f"timespan: {sp.timespan}, delta_t: {delta_t}")
 
@@ -131,7 +132,7 @@ def run_simulation():
         # Ergebnisse speichern
         plt.imshow(X[...,0], cmap=cmap, vmin=0, vmax=1)
         plt.title(f"Simulation result at t = {t} s\nTemperature = {t1} -- {t2}")
-        plt.savefig(f"{directory}/simulation_result_{t}.png", dpi=600)
+        plt.savefig(f"{directory}/simulation_result_{t}.png", dpi=600, bbox_inches='tight')
         np.save(f"{directory}/simulation_result_{t}.npy", X)
 
 def write_column_first(path, data: np.ndarray, col_name: str):
