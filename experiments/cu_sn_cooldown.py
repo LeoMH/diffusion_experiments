@@ -75,7 +75,7 @@ def run_simulation():
     lookup_cu_temp = convert_lookup(lookup_cu_temp)
     lookup_sn_temp = pd.read_csv(lookup_path, sep=",", decimal=".")["aSn"].to_numpy()
     lookup_sn_temp = convert_lookup(lookup_sn_temp)
-    lookup_sn_temp = lookup_sn_temp[::-1]
+    lookup_cu_temp = lookup_cu_temp[::-1]
     
 
     # create an instance of the SimulationParams structure (T=500)

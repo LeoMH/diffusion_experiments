@@ -5,3 +5,4 @@ result/
 venv/
 vid_result/
 *.mp4
+test*.txt
