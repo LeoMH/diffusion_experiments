@@ -87,10 +87,10 @@ def run_simulation():
     sp.dd = 5e-10
     num_cells = X.shape[0] # / sp.dd ?
     sp.num_temps = num_cells
-    timespan = 1250 # 1.25 Sekunden?
+    timespan = 125000 # 125 Sekunden?
 
     for i in range(0,8):
-        t = i * 1.250 + 1.250
+        t = i * 125.0 + 125.0
 
         # in ausgelagerter Funktion: Temperaturen interpolieren + lookup berechnen
         t1 = temps[i]
@@ -126,8 +126,9 @@ def run_simulation():
 
         # run simulation cuda
         result, X = simulation_cuda(sp, X, lookup_cu, lookup_sn, temp_idx)
+        max_value = np.max(X, axis=1)
 
-        # print(f"Min X: {np.min(X)}")
+        print(f"Max X: {max_value}")
 
         # Ergebnisse speichern
         plt.imshow(X[...,0], cmap=cmap, vmin=0, vmax=1)
