@@ -1,12 +1,14 @@
 # from simulation_wrapper import SimulationParams, simulation_cuda
 import matplotlib
 from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt2
 from matplotlib.colors import LinearSegmentedColormap
 matplotlib.use("agg")
 import pandas as pd
 from diffusion_cuda.simulation_wrapper import SimulationParams, simulation_cuda
 import numpy as np
 import os
+import csv
 
 from parse_image_air import parse_image_air
 
@@ -59,28 +61,72 @@ def run_simulation():
     # image_path = "Cu-Sinterstruktur(200x200µm).tif"
     # image_path = "alubeispiel_cropped.tiff"
     # image_path = "air_image.tiff"
-    image_path = "images/geometric model_Al-Cu_REM-image.tiff"
+    image_path = "images/al-cu_spray_coat.tiff"
     # X = parse_image(image_path)[..., np.newaxis]  # Add a new axis to make it 3D
     X = parse_image_air(image_path)[..., np.newaxis]  # Add a new axis to make it 3D
+    t = 1
+
+    # --- Plot 1: The Image/Heatmap ---
+    fig1, ax1 = plt.subplots()
+    im = ax1.imshow(X[..., 0], cmap=cmap, vmin=0, vmax=1)
+    fig1.colorbar(im, ax=ax1) # Attach colorbar specifically to this image
+    ax1.set_title(f"Simulation result at t={t}")
+    fig1.savefig(f"{directory}/simulation_result_{t}.png", dpi=600)
+    plt.close(fig1) # Closes only fig1
+
+    # --- Plot 2: The Line Graph ---
+    value_data_collection = 330
+    x_axis = int(X.shape[1])
+    Y = X[..., 0][value_data_collection, 250:700]
+    x_axis_points = np.arange(250,700)
+
+    fig2, ax2 = plt.subplots()
+    ax2.plot(x_axis_points, Y)
+    ax2.set_title(f"Simulation result at t={t}")
+    fig2.savefig(f"{directory}/row_simulation_result_{t}.png", dpi=600)
+    plt.close(fig2) # Closes only fig2
+
+    # Save your data
+    np.save(f"{directory}/simulation_result_{t}.npy", X)
     
-    plt.imshow(X[...,0], cmap=cmap,  vmin=0, vmax=1)
-    plt.colorbar()
-    plt.title(f"Simulation result at t=0")
-    plt.savefig(f"{directory}/simulation_begin.png",dpi=600)
-    np.save(f"{directory}/simulation_begin.npy", X)
+
+    # test
+    print(len(Y))
 
     # plot results 
-    
-    t = 0
-    for i in range(0,204000,4000):
+    span = 400000
+    with open(f'{directory}/result_row.csv', 'w') as csvfile: # clear existing file of content
+        csvfile.close()
+    with open(f'{directory}/result_row.csv', 'a', newline='') as csvfile:
+        csvwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        csvwriter.writerow([f"t={t}", *Y])
+        csvfile.close()
+
+    for i in range(1,51):
         t += 1
         delta_t = ((sp.dd * sp.dd) / sp.D_A)
-        sp.timespan = i * delta_t
+        sp.timespan = span * delta_t
         result, X = simulation_cuda(sp, X, lookup_al, lookup_cu)
-        plt.imshow(X[...,0], cmap=cmap, vmin=0, vmax=1)
-        plt.title(f"Simulation result at t={t}")
-        plt.savefig(f"{directory}/simulation_result_{t}.png", dpi=600)
-        np.save(f"{directory}/simulation_result_{t}.npy", X)
+        # --- Plot 1: The Image/Heatmap ---
+        fig1, ax1 = plt.subplots()
+        im = ax1.imshow(X[..., 0], cmap=cmap, vmin=0, vmax=1)
+        fig1.colorbar(im, ax=ax1) # Attach colorbar specifically to this image
+        ax1.set_title(f"Simulation result at t={t}")
+        fig1.savefig(f"{directory}/simulation_result_{t}.png", dpi=600)
+        plt.close(fig1) # Closes only fig1
+        Y = X[...,0][value_data_collection,250:700]
+        # --- Plot 2: The Line Graph ---
+        fig2, ax2 = plt.subplots()
+        ax2.plot(x_axis_points, Y)
+        ax2.set_title(f"Simulation result at t={t}")
+        fig2.savefig(f"{directory}/row_simulation_result_{t}.png", dpi=600)
+        plt.close(fig2) # Closes only fig2
+        # Save your data
+        np.save(f"{directory}/simulation_result_{t}.npy", X) 
+        with open(f'{directory}/result_row.csv', 'a', newline='') as csvfile:
+            csvwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            csvwriter.writerow([f"t={t}", *Y])
+            csvfile.close()
    
 def convert_lookup(arr : np.array):
     arrays = np.split(arr, 1001)
